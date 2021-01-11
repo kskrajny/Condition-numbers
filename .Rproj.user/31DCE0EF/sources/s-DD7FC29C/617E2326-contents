@@ -1,0 +1,82 @@
+---
+title: "Condition_Research"
+author: "Jakub Skrajny"
+date: "11 01 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  Introduction
+This is my project for WNE UW course called "Program R w zastosowaniach ekonomicznych i finansowych". \
+My goal was to analyze how choice of a norm influence the condition number of matrices. \
+
+## Dataset
+In order to gain data for this project I created a script. \
+This script: \
+- generates some square matrices using normal distribution \
+- counts condition numbers of matrices based on different norms \
+- saves it to csv (size of data that I generated makes it unnecessary actually) \
+
+Theses are norms that i used: \
+  - 2-norm \
+  - Frobenius norm \
+  - one norm \
+  - max norm \
+  - infinity norm \
+  
+```{r}
+# number of matrices
+K<-100
+
+# size of matrix
+N<-10
+
+# normal distribution parameters
+sd<-10
+mean<-0
+
+# containers for conditions
+norm2_true_cond <- numeric(0)
+norm2_cond <- numeric(0)
+normF_cond <- numeric(0)
+normO_cond <- numeric(0)
+normM_cond <- numeric(0)
+normI_cond <- numeric(0)
+
+# main
+for (i in 1:K) {
+  A <- matrix( rnorm(N*N, mean, sd), N, N)
+  AI <- solve(A)
+  norm2_true_cond <- append(norm2_true_cond, kappa(A, exact = TRUE))
+  norm2_cond <- append(norm2_cond, norm(A, '2')*norm(AI, '2'))
+  normF_cond <- append(normF_cond, norm(A, 'F')*norm(AI, 'F'))
+  normO_cond <- append(normO_cond, norm(A, 'O')*norm(AI, 'O'))
+  normM_cond <- append(normM_cond, norm(A, 'M')*norm(AI, 'M'))
+  normI_cond <- append(normI_cond, norm(A, 'I')*norm(AI, 'I'))
+}
+
+df<-data.frame(norm2_true_cond, norm2_cond, normF_cond, normO_cond, normM_cond)
+write.csv(df, paste(getwd(), "/conditions.csv", sep=""), row.names = FALSE)
+
+head(df)
+```
+
+## Correlations between condition numbers based on different norms
+
+```{r}
+C <-cor(df)
+corrplot(C, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+
+```
+
+## Summmary table
+
+```{r}
+library(arsenal) 
+table_one <- tableby(norm2_cond ~ norm2_true_cond, data=df) 
+summary(table_one, title = "LOL")
+```

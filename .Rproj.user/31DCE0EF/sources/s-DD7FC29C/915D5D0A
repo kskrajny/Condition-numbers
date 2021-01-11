@@ -1,0 +1,25 @@
+{
+    "id": "915D5D0A",
+    "path": "~/wneR/conditionResearch/data_generator.R",
+    "project_path": "data_generator.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1610382501888.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "cursorPosition": "35,0",
+        "scrollLine": "3"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1610386450,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1610386450027,
+    "read_only": false,
+    "read_only_alternatives": []
+}

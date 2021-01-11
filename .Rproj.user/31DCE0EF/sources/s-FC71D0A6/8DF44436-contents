@@ -1,0 +1,110 @@
+---
+title: "Condition_Research"
+author: "Jakub Skrajny"
+date: "11 01 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(arsenal)
+library(corrplot)
+library(RColorBrewer)
+library(ggplot2)
+library(reshape2)
+```
+
+##  Introduction
+This is my project for WNE UW course called "Program R w zastosowaniach ekonomicznych i finansowych". \
+My goal was to analyze how choice of a norm influence the condition number of matrices. \
+
+## Dataset
+In order to gain data for this project I created a script. \
+This script: \
+- generates some square matrices using normal distribution \
+- counts condition numbers of matrices based on different norms \
+- saves it to csv (size of data that I generated makes it unnecessary actually) \
+
+Theses are norms that i used: \
+  - 2-norm \
+  - Frobenius norm \
+  - max norm \
+  - infinity norm \
+  
+```{r}
+# number of matrices
+K<-1000
+
+# size of matrix
+N<-10
+
+# normal distribution parameters
+sd<-100
+mean<-0
+
+# containers for conditions
+norm2_cond <- numeric(0)
+normF_cond <- numeric(0)
+normM_cond <- numeric(0)
+normI_cond <- numeric(0)
+
+# main
+for (i in 1:K) {
+  A <- matrix( rnorm(N*N, mean, sd), N, N)
+  AI <- solve(A)
+  norm2_cond <- append(norm2_cond, norm(A, '2')*norm(AI, '2'))
+  normF_cond <- append(normF_cond, norm(A, 'F')*norm(AI, 'F'))
+  normM_cond <- append(normM_cond, norm(A, 'M')*norm(AI, 'M'))
+  normI_cond <- append(normI_cond, norm(A, 'I')*norm(AI, 'I'))
+}
+
+df<-data.frame(norm2_cond, normF_cond, normM_cond, normI_cond)
+write.csv(df, paste(getwd(), "/conditions.csv", sep=""), row.names = FALSE)
+
+head(df)
+```
+## Summmary table
+
+```{r}
+summary(df)
+```
+We see that the largest values are extremely different that others. \
+It means that even if we could properly count most of the equations with matrices. \
+There are some matrices that we probably shouldn't even try to use.  \
+
+## Density plots
+
+This is a diagram that shows density distributions that are made from conditional numbers. \
+As we expected, there are a lot of relatively small values. \
+Shapes are very similar to each other. \
+We can suppose that correlation between these functions is very high. \
+
+```{r}
+melted <- melt(df)
+
+ggplot(melted, aes(x=value, fill=variable)) +
+    geom_density(alpha=0.25) +
+    scale_fill_manual(values = c("red", "blue", "orange", "green")) +
+    geom_vline(aes(xintercept=mean(norm2_cond)), color="red", linetype="dashed", size=1) +
+    geom_vline(aes(xintercept=mean(normF_cond)), color="blue", linetype="dashed", size=1) +
+    geom_vline(aes(xintercept=mean(normM_cond)), color="orange", linetype="dashed", size=1) +
+    geom_vline(aes(xintercept=mean(normI_cond)), color="green", linetype="dashed", size=1) +
+    scale_x_continuous(trans='log2')
+```
+
+## Correlations between condition numbers based on different norms
+
+As we thought, these functions correlate with each other totally. \
+This might mean that no matter what norm we choose to check condition number,
+we get similar information about difficulty that this matrix can cause during calculations.
+
+```{r}
+C <-cor(df)
+corrplot(C, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+```
+
+## Summary
+
+If it comes to matrices created using normal distribution,
+there is no big difference what norm we choose to count condition number.

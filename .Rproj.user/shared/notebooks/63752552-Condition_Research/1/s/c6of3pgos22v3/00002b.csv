@@ -1,0 +1,11 @@
+"0","melted <- melt(df)"
+"2","No id variables; using all as measure variables
+"
+"0","ggplot(melted, aes(x=value, fill=variable)) +"
+"0","    geom_density(alpha=0.25) +"
+"0","    scale_fill_manual(values = c(""red"", ""blue"", ""orange"", ""green"")) +"
+"0","    geom_vline(aes(xintercept=mean(norm2_cond)), color=""red"", linetype=""dashed"", size=1) +"
+"0","    geom_vline(aes(xintercept=mean(normF_cond)), color=""blue"", linetype=""dashed"", size=1) +"
+"0","    geom_vline(aes(xintercept=mean(normM_cond)), color=""orange"", linetype=""dashed"", size=1) +"
+"0","    geom_vline(aes(xintercept=mean(normI_cond)), color=""green"", linetype=""dashed"", size=1) +"
+"0","    scale_x_continuous(trans='log2')"
